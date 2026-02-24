@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOOLBOX — All-in-One Utilities</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f; --surface: #111118; --surface2: #1a1a24;
+    --border: #2a2a3a; --accent: #00e5ff; --accent2: #ff6b35;
+    --accent3: #a855f7; --text: #e8e8f0; --muted: #666680;
+    --success: #22c55e; --danger: #ef4444;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 1000; }
+  header { border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; height: 64px; position: sticky; top: 0; background: rgba(10,10,15,0.95); backdrop-filter: blur(12px); z-index: 100; }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 4px; color: var(--accent); text-shadow: 0 0 20px rgba(0,229,255,0.5); }
+  .logo span { color: var(--text); }
+  .hero { padding: 4rem 2rem 2rem; text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content: 'TOOLBOX'; position: absolute; font-family: 'Bebas Neue', sans-serif; font-size: 22vw; color: rgba(255,255,255,0.02); letter-spacing: 8px; top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; white-space: nowrap; }
+  .hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.5rem, 6vw, 5rem); letter-spacing: 6px; line-height: 1; margin-bottom: 1rem; }
+  .hero h1 em { color: var(--accent); font-style: normal; }
+  .hero p { color: var(--muted); font-size: 0.88rem; font-family: 'DM Mono', monospace; }
+  .tools-nav { display: flex; flex-wrap: wrap; gap: 0.8rem; padding: 2rem; max-width: 1100px; margin: 0 auto; justify-content: center; }
+  .tool-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.2rem; cursor: pointer; transition: all 0.25s; width: 138px; text-align: center; position: relative; overflow: hidden; }
+  .tool-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 0%, var(--card-color, var(--accent)) 0%, transparent 70%); opacity: 0; transition: opacity 0.3s; }
+  .tool-card:hover::before { opacity: 0.1; }
+  .tool-card:hover { border-color: var(--card-color, var(--accent)); transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+  .tool-card.active { border-color: var(--card-color, var(--accent)); background: var(--surface2); }
+  .tool-icon { font-size: 1.9rem; margin-bottom: 0.55rem; display: block; }
+  .tool-name { font-size: 0.71rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text); }
+  .tool-desc { font-size: 0.62rem; color: var(--muted); margin-top: 3px; font-family: 'DM Mono', monospace; }
+  .panel { display: none; max-width: 860px; margin: 0 auto 4rem; padding: 0 2rem; animation: fadeUp 0.3s ease forwards; }
+  .panel.visible { display: block; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .panel-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+  .panel-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 3px; color: var(--accent); }
+  .panel-body { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; border: 1px solid var(--accent); background: rgba(0,229,255,0.08); color: var(--accent); font-family: 'DM Mono', monospace; font-size: 0.78rem; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; white-space: nowrap; text-decoration: none; }
+  .btn:hover { background: rgba(0,229,255,0.18); box-shadow: 0 0 14px rgba(0,229,255,0.25); }
+  .btn.primary { background: var(--accent); color: #000; font-weight: 600; }
+  .btn.primary:hover { box-shadow: 0 0 20px rgba(0,229,255,0.45); }
+  .btn.orange { border-color: var(--accent2); background: rgba(255,107,53,0.08); color: var(--accent2); }
+  .btn.orange:hover { background: rgba(255,107,53,0.18); }
+  .btn.purple { border-color: var(--accent3); background: rgba(168,85,247,0.08); color: var(--accent3); }
+  .btn.purple:hover { background: rgba(168,85,247,0.18); }
+  .btn.green { border-color: var(--success); background: rgba(34,197,94,0.08); color: var(--success); }
+  .btn.green:hover { background: rgba(34,197,94,0.18); }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+  label.lbl { display: block; font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  select, input[type=text], input[type=number], input[type=url], textarea { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 8px; font-family: 'DM Mono', monospace; font-size: 0.85rem; width: 100%; outline: none; transition: border-color 0.2s; }
+  select:focus, input:focus, textarea:focus { border-color: var(--accent); }
+  .drop-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 3rem 2rem; text-align: center; cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden; }
+  .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: rgba(0,229,255,0.04); }
+  .drop-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; z-index: 2; }
+  .drop-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .drop-text { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.82rem; }
+  .drop-text strong { color: var(--accent); }
+  .msg { padding: 12px 16px; border-radius: 8px; font-family: 'DM Mono', monospace; font-size: 0.82rem; margin-top: 1rem; }
+  .msg.success { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: var(--success); }
+  .msg.error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--danger); }
+  .msg.info { background: rgba(0,229,255,0.06); border: 1px solid rgba(0,229,255,0.2); color: var(--accent); }
+  .row { display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; }
+  .col { flex: 1; min-width: 140px; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+  /* File converter */
+  .file-info { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin-top: 1rem; display: flex; align-items: center; gap: 12px; font-family: 'DM Mono', monospace; font-size: 0.82rem; flex-wrap: wrap; }
+  .convert-arrow { display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--accent); margin: 0.5rem 0; }
+  /* Calculator */
+  .calc-wrap { max-width: 420px; margin: 0 auto; }
+  .calc-display { background: #070710; border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.5rem; margin-bottom: 1rem; text-align: right; }
+  .calc-expression { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--muted); min-height: 1.2em; word-break: break-all; }
+  .calc-value { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; letter-spacing: 2px; color: var(--accent); text-shadow: 0 0 20px rgba(0,229,255,0.4); word-break: break-all; line-height: 1.1; }
+  .calc-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+  .calc-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 13px 6px; font-size: 0.82rem; font-family: 'DM Mono', monospace; cursor: pointer; transition: all 0.15s; user-select: none; }
+  .calc-btn:hover { background: var(--border); }
+  .calc-btn:active { transform: scale(0.93); }
+  .calc-btn.op { color: var(--accent); border-color: rgba(0,229,255,0.3); }
+  .calc-btn.fn { color: var(--accent3); border-color: rgba(168,85,247,0.3); font-size: 0.66rem; }
+  .calc-btn.eq { background: var(--accent); color: #000; font-weight: 700; border-color: var(--accent); }
+  .calc-btn.eq:hover { box-shadow: 0 0 16px rgba(0,229,255,0.4); }
+  .calc-btn.clr { color: var(--danger); border-color: rgba(239,68,68,0.3); }
+  .calc-btn.span2 { grid-column: span 2; }
+  .calc-history { margin-top: 1rem; border: 1px solid var(--border); border-radius: 10px; max-height: 150px; overflow-y: auto; }
+  .calc-history-item { padding: 8px 14px; font-family: 'DM Mono', monospace; font-size: 0.75rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
+  .calc-history-item:last-child { border-bottom: none; }
+  /* BG Remover */
+  canvas { display: none; }
+  .img-canvas-wrap { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 1.5rem; }
+  .img-box { flex: 1; min-width: 200px; text-align: center; }
+  .img-preview { width: 100%; max-height: 280px; object-fit: contain; background: repeating-conic-gradient(#1a1a24 0% 25%, #111118 0% 50%) 0 0 / 16px 16px; border-radius: 10px; border: 1px solid var(--border); display: block; }
+  .color-swatch { width: 32px; height: 32px; border-radius: 6px; border: 2px solid var(--border); cursor: pointer; transition: border-color 0.2s; flex-shrink: 0; }
+  .color-swatch.sel { border-color: var(--accent) !important; box-shadow: 0 0 8px rgba(0,229,255,0.5); }
+  .color-row { display: flex; gap: 8px; align-items: center; margin-top: 1rem; flex-wrap: wrap; }
+  .tolerance-row { display: flex; align-items: center; gap: 1rem; margin-top: 0.75rem; }
+  .tolerance-row input[type=range] { flex: 1; accent-color: var(--accent); background: none; border: none; padding: 0; }
+  /* QR type tabs */
+  .qr-type-btn { padding: 7px 13px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.72rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .qr-type-btn:hover { border-color: var(--success); color: var(--success); }
+  .qr-type-btn.active { border-color: var(--success); color: var(--success); background: rgba(34,197,94,0.1); }
+  /* QR output */
+  #qr-output { display: flex; justify-content: center; margin-top: 1.5rem; min-height: 80px; }
+  /* Units */
+  .unit-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .unit-tab { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; }
+  .unit-tab.active, .unit-tab:hover { border-color: var(--accent3); color: var(--accent3); }
+  /* Text */
+  .text-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 1rem; }
+  .text-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin-top: 1rem; }
+  .stat-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
+  .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--accent); letter-spacing: 2px; }
+  .stat-lbl { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); text-transform: uppercase; }
+  /* Color */
+  .swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 8px; margin-top: 1rem; }
+  .big-swatch { height: 48px; border-radius: 8px; border: 2px solid transparent; cursor: pointer; transition: transform 0.15s, border-color 0.15s; }
+  .big-swatch:hover { transform: scale(1.08); border-color: #fff; }
+  .color-output-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem; }
+  .color-out { flex: 1; min-width: 120px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-family: 'DM Mono', monospace; font-size: 0.8rem; cursor: pointer; }
+  .color-out:hover { border-color: var(--accent); }
+  /* Hash */
+  .hash-result { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent); word-break: break-all; margin-top: 0.5rem; cursor: pointer; }
+  .hash-result:hover { border-color: var(--accent); }
+  /* Markdown */
+  .md-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media(max-width:600px){ .md-wrap { grid-template-columns: 1fr; } }
+  .md-preview { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; min-height: 200px; font-size: 0.9rem; line-height: 1.7; overflow-y: auto; max-height: 440px; }
+  .md-preview h1,.md-preview h2,.md-preview h3 { font-family:'Bebas Neue',sans-serif; letter-spacing:2px; color:var(--accent); margin:1rem 0 0.5rem; }
+  .md-preview p { margin-bottom:0.75rem; }
+  .md-preview code { background:rgba(0,0,0,0.4); padding:2px 6px; border-radius:4px; font-family:'DM Mono',monospace; font-size:0.82rem; color:var(--accent3); }
+  .md-preview pre { background:rgba(0,0,0,0.4); padding:1rem; border-radius:8px; overflow-x:auto; margin-bottom:0.75rem; }
+  .md-preview ul,.md-preview ol { padding-left:1.5rem; margin-bottom:0.75rem; }
+  .md-preview li { margin-bottom:3px; }
+  .md-preview blockquote { border-left:3px solid var(--accent); padding-left:1rem; color:var(--muted); margin-bottom:0.75rem; font-style:italic; }
+  .md-preview a { color:var(--accent); }
+  .md-preview strong { color:var(--text); font-weight:700; }
+  .md-preview hr { border:none; border-top:1px solid var(--border); margin:1.5rem 0; }
+  /* Timer */
+  .timer-display { font-family:'Bebas Neue',sans-serif; font-size:5rem; color:var(--accent); text-align:center; letter-spacing:6px; text-shadow:0 0 30px rgba(0,229,255,0.4); margin:1rem 0; }
+  .timer-btns { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+  .lap-list { margin-top:1rem; max-height:180px; overflow-y:auto; border:1px solid var(--border); border-radius:8px; }
+  .lap-item { padding:8px 14px; font-family:'DM Mono',monospace; font-size:0.78rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; color:var(--muted); }
+  .lap-item:last-child { border-bottom:none; }
+  .lap-item strong { color:var(--accent); }
+  /* Loan */
+  .loan-result-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:1rem; margin-top:1.5rem; }
+  .loan-box { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:1rem; }
+  .loan-val { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; color:var(--accent); letter-spacing:2px; }
+  .loan-lbl { font-family:'DM Mono',monospace; font-size:0.68rem; color:var(--muted); text-transform:uppercase; margin-top:2px; }
+  .amort-wrap { max-height:280px; overflow-y:auto; border:1px solid var(--border); border-radius:8px; margin-top:1rem; }
+  .amort-table { width:100%; border-collapse:collapse; font-family:'DM Mono',monospace; font-size:0.75rem; }
+  .amort-table th { background:var(--surface2); color:var(--muted); padding:8px 10px; text-align:left; border-bottom:1px solid var(--border); font-size:0.68rem; text-transform:uppercase; position:sticky;top:0; }
+  .amort-table td { padding:7px 10px; border-bottom:1px solid rgba(42,42,58,0.5); color:var(--text); }
+  .amort-table tr:hover td { background:rgba(0,229,255,0.03); }
+  /* Password */
+  .pass-output { font-family:'DM Mono',monospace; font-size:1.1rem; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:1.2rem 1.5rem; letter-spacing:2px; color:var(--accent); text-align:center; word-break:break-all; margin:1rem 0; min-height:3rem; cursor:pointer; transition:border-color 0.2s; }
+  .pass-output:hover { border-color:var(--accent); }
+  .pass-strength-bar { height:6px; border-radius:3px; margin-top:0.5rem; transition:all 0.3s; width:0; }
+  .checkrow { display:flex; align-items:center; gap:10px; margin-bottom:8px; font-family:'DM Mono',monospace; font-size:0.82rem; color:var(--text); }
+  .checkrow input[type=checkbox] { accent-color:var(--accent); width:16px; height:16px; cursor:pointer; }
+  /* File converter type tiles */
+  .cvt-type-tile { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 0.5rem; text-align: center; cursor: pointer; font-size: 0.72rem; font-family: 'DM Mono', monospace; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; line-height: 1.8; position: relative; z-index: 10; }
+  .cvt-type-tile span { font-size: 1.5rem; display: block; line-height: 1; margin-bottom: 4px; }
+  .cvt-type-tile:hover { border-color: var(--accent); color: var(--accent); }
+  .cvt-type-tile.active { border-color: var(--accent); color: var(--accent); background: rgba(0,229,255,0.08); }
+  /* Color tool */
+  .col-val-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
+  .col-val-box:hover { border-color: var(--accent); }
+  .col-val-box:hover .col-val-copy { opacity: 1; }
+  .col-val-lbl { font-family: 'DM Mono', monospace; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 4px; }
+  .col-val-num { font-family: 'DM Mono', monospace; font-size: 0.92rem; color: var(--accent); font-weight: 500; }
+  .col-val-copy { position: absolute; top: 8px; right: 10px; font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--accent); opacity: 0; transition: opacity 0.2s; text-transform: uppercase; letter-spacing: 1px; }
+  .pal-btn { padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.68rem; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }
+  .pal-btn:hover, .pal-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,229,255,0.08); }
+  .pal-swatch { border-radius: 8px; height: 52px; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; border: 2px solid transparent; }
+  .pal-swatch:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.2); }
+  .pal-hex { font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(--muted); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  @media(max-width:600px) { .tools-nav { padding: 1rem; } .tool-card { width: 115px; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">TOOL<span>BOX</span></div>
+  <div style="margin-left:auto;font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--muted)">v2.0 &nbsp;·&nbsp; 12 tools</div>
+</header>
+<main>
+  <section class="hero">
+    <h1>Every tool you <em>need</em>,<br>one place.</h1>
+    <p>// converter · calculator · bg remover · qr · units · text · color · hash · markdown · timer · loan · password</p>
+  </section>
+  <div class="tools-nav" id="tool-cards"></div>
+
+  <!-- 1. FILE CONVERTER -->
+  <div class="panel" id="panel-converter">
+    <div class="panel-header"><span style="font-size:2rem">🔄</span><h2>File Converter</h2></div>
+    <div class="panel-body">
+      <!-- Format quick-pick tiles -->
+      <label class="lbl" style="position:relative;z-index:5">What are you converting?</label>
+      <div id="cvt-type-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:1.5rem;position:relative;z-index:5">
+        <div class="cvt-type-tile active" data-type="image" onclick="setCvtType('image')"><span>🖼️</span><br>Image</div>
+        <div class="cvt-type-tile" data-type="pdf" onclick="setCvtType('pdf')"><span>📑</span><br>PDF</div>
+        <div class="cvt-type-tile" data-type="doc" onclick="setCvtType('doc')"><span>📝</span><br>Document</div>
+        <div class="cvt-type-tile" data-type="data" onclick="setCvtType('data')"><span>📊</span><br>Data / CSV</div>
+        <div class="cvt-type-tile" data-type="text" onclick="setCvtType('text')"><span>📄</span><br>Text / Code</div>
+        <div class="cvt-type-tile" data-type="audio" onclick="setCvtType('audio')"><span>🎵</span><br>Audio</div>
+      </div>
+      <div id="cvt-info-box" class="msg info" style="margin-bottom:1.2rem;position:relative;z-index:5"></div>
+      <div class="drop-zone" id="file-drop" onclick="document.getElementById('file-input').click()">
+        <input type="file" id="file-input" accept="*/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;z-index:2" onclick="event.stopPropagation()">
+        <div class="drop-icon" id="cvt-drop-icon">🖼️</div>
+        <div class="drop-text"><strong>Click or drag</strong> a file here</div>
+        <div class="drop-text" id="cvt-drop-hint" style="margin-top:4px">PNG · JPEG · WebP · BMP · GIF · SVG</div>
+      </div>
+      <div id="file-info-display"></div>
+      <hr class="divider">
+      <div class="row">
+        <div class="col"><label class="lbl">Convert To</label><select id="convert-to"></select></div>
+        <button class="btn primary" id="convert-btn" onclick="convertFile()" disabled>⚡ Convert</button>
+      </div>
+      <div id="convert-result-area"></div>
+    </div>
+  </div>
+
+  <!-- 2. CALCULATOR -->
+  <div class="panel" id="panel-calc">
+    <div class="panel-header"><span style="font-size:2rem">🧮</span><h2>Scientific Calculator</h2></div>
+    <div class="panel-body">
+      <div class="calc-wrap">
+        <div class="calc-display">
+          <div class="calc-expression" id="calc-expr"></div>
+          <div class="calc-value" id="calc-val">0</div>
+        </div>
+        <div class="calc-grid" id="calc-grid"></div>
+        <div class="calc-history" id="calc-history" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. BG REMOVER -->
+  <div class="panel" id="panel-bgremove">
+    <div class="panel-header"><span style="font-size:2rem">✂️</span><h2>Background Remover</h2></div>
+    <div class="panel-body">
+      <div class="msg info">💡 Upload an image, then click directly on the background in the image to pick its color. Adjust tolerance for fuzzy edges.</div>
+      <div class="drop-zone" style="margin-top:1rem" id="bg-drop">
+        <input type="file" id="bg-input" accept="image/*">
+        <div class="drop-icon">🖼️</div>
+        <div class="drop-text"><strong>Click or drag</strong> an image here</div>
+      </div>
+      <canvas id="bg-source-canvas"></canvas>
+      <canvas id="bg-result-canvas"></canvas>
+      <div id="bg-editor" style="display:none;margin-top:1.5rem">
+        <div class="img-canvas-wrap">
+          <div class="img-box">
+            <label class="lbl">Click image to pick background color</label>
+            <canvas id="bg-click-canvas" style="display:block;width:100%;max-height:280px;border-radius:10px;border:1px solid var(--border);cursor:crosshair;background:repeating-conic-gradient(#1a1a24 0% 25%,#111118 0% 50%) 0 0/16px 16px;"></canvas>
+          </div>
+          <div class="img-box">
+            <label class="lbl">Result (transparent background)</label>
+            <img id="bg-result-img" class="img-preview" alt="result" style="min-height:80px">
+          </div>
+        </div>
+        <div style="margin-top:1.2rem">
+          <label class="lbl">Selected Color</label>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:6px;flex-wrap:wrap">
+            <div id="bg-picked-swatch" style="width:40px;height:40px;border-radius:8px;border:2px solid var(--border);background:#fff;flex-shrink:0"></div>
+            <div id="bg-picked-label" style="font-family:'DM Mono',monospace;font-size:0.82rem;color:var(--accent)">rgb(255, 255, 255) — Click image to change</div>
+          </div>
+          <label class="lbl" style="margin-top:1rem">Or pick a preset</label>
+          <div class="color-row" id="bg-presets">
+            <div class="color-swatch sel" style="background:#fff" data-rgb="255,255,255" title="White"></div>
+            <div class="color-swatch" style="background:#000" data-rgb="0,0,0" title="Black"></div>
+            <div class="color-swatch" style="background:#0f0" data-rgb="0,255,0" title="Green Screen"></div>
+            <div class="color-swatch" style="background:#00f" data-rgb="0,0,255" title="Blue Screen"></div>
+            <div class="color-swatch" style="background:#f00" data-rgb="255,0,0" title="Red Screen"></div>
+            <div class="color-swatch" style="background:#c0c0c0" data-rgb="192,192,192" title="Gray"></div>
+          </div>
+        </div>
+        <div class="tolerance-row" style="margin-top:1rem">
+          <label class="lbl" style="margin:0;white-space:nowrap">Tolerance</label>
+          <input type="range" id="bg-tolerance" min="0" max="220" value="40" oninput="document.getElementById('bg-tol-val').textContent=this.value">
+          <span id="bg-tol-val" style="font-family:'DM Mono',monospace;font-size:0.82rem;color:var(--accent);width:35px">40</span>
+        </div>
+        <div style="margin-top:1.2rem;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn primary" onclick="removeBackground()">✂️ Remove Background</button>
+          <button class="btn orange" id="bg-dl-btn" onclick="downloadBgResult()" disabled>⬇ Download PNG</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. QR -->
+  <div class="panel" id="panel-qr">
+    <div class="panel-header"><span style="font-size:2rem">▦</span><h2>QR Code Generator</h2></div>
+    <div class="panel-body">
+      <!-- QR type tabs -->
+      <label class="lbl">QR Code Type</label>
+      <div id="qr-type-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1.5rem">
+        <button class="qr-type-btn active" data-qtype="url" onclick="setQRType('url',this)">🌐 Website</button>
+        <button class="qr-type-btn" data-qtype="wifi" onclick="setQRType('wifi',this)">📶 WiFi</button>
+        <button class="qr-type-btn" data-qtype="text" onclick="setQRType('text',this)">📝 Text</button>
+        <button class="qr-type-btn" data-qtype="email" onclick="setQRType('email',this)">✉️ Email</button>
+        <button class="qr-type-btn" data-qtype="phone" onclick="setQRType('phone',this)">📞 Phone</button>
+        <button class="qr-type-btn" data-qtype="sms" onclick="setQRType('sms',this)">💬 SMS</button>
+        <button class="qr-type-btn" data-qtype="vcard" onclick="setQRType('vcard',this)">👤 Contact</button>
+        <button class="qr-type-btn" data-qtype="geo" onclick="setQRType('geo',this)">📍 Location</button>
+      </div>
+
+      <!-- Dynamic input area -->
+      <div id="qr-fields"></div>
+
+      <div class="row" style="margin-top:1rem">
+        <div class="col"><label class="lbl">Size</label>
+          <select id="qr-size" onchange="generateQR()">
+            <option value="150">150 × 150</option><option value="250" selected>250 × 250</option><option value="400">400 × 400</option>
+          </select>
+        </div>
+        <div class="col"><label class="lbl">Error Correction</label>
+          <select id="qr-ec" onchange="generateQR()">
+            <option value="L">Low (7%)</option><option value="M" selected>Medium (15%)</option><option value="Q">Quartile (25%)</option><option value="H">High (30%)</option>
+          </select>
+        </div>
+      </div>
+      <!-- Encoded string preview -->
+      <div id="qr-encoded-preview" style="margin-top:0.75rem;display:none">
+        <label class="lbl">Encoded string</label>
+        <div id="qr-encoded-text" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--muted);word-break:break-all"></div>
+      </div>
+      <div id="qr-output" style="display:flex;justify-content:center;margin-top:1.5rem;min-height:80px"></div>
+      <div id="qr-dl" style="text-align:center;margin-top:1rem;display:none">
+        <button class="btn orange" onclick="downloadQR()">⬇ Download QR Code</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. UNITS -->
+  <div class="panel" id="panel-units">
+    <div class="panel-header"><span style="font-size:2rem">📐</span><h2>Unit Converter</h2></div>
+    <div class="panel-body">
+      <div class="unit-tabs" id="unit-tabs"></div>
+      <div class="row">
+        <div class="col"><label class="lbl">Value</label><input type="number" id="unit-val" placeholder="0" oninput="convertUnits()"></div>
+        <div class="col"><label class="lbl">From</label><select id="unit-from" onchange="convertUnits()"></select></div>
+        <div class="col"><label class="lbl">To</label><select id="unit-to" onchange="convertUnits()"></select></div>
+      </div>
+      <div id="unit-result" class="msg info" style="margin-top:1.5rem;display:none"></div>
+    </div>
+  </div>
+
+  <!-- 6. TEXT TOOLS -->
+  <div class="panel" id="panel-text">
+    <div class="panel-header"><span style="font-size:2rem">📝</span><h2>Text Tools</h2></div>
+    <div class="panel-body">
+      <label class="lbl">Input Text</label>
+      <textarea id="text-input" rows="6" placeholder="Paste or type your text here..." oninput="updateTextStats()" style="resize:vertical"></textarea>
+      <div class="text-stats">
+        <div class="stat-box"><div class="stat-val" id="stat-chars">0</div><div class="stat-lbl">Characters</div></div>
+        <div class="stat-box"><div class="stat-val" id="stat-nospace">0</div><div class="stat-lbl">No Spaces</div></div>
+        <div class="stat-box"><div class="stat-val" id="stat-words">0</div><div class="stat-lbl">Words</div></div>
+        <div class="stat-box"><div class="stat-val" id="stat-lines">0</div><div class="stat-lbl">Lines</div></div>
+        <div class="stat-box"><div class="stat-val" id="stat-sentences">0</div><div class="stat-lbl">Sentences</div></div>
+        <div class="stat-box"><div class="stat-val" id="stat-read">0</div><div class="stat-lbl">Min Read</div></div>
+      </div>
+      <div class="text-actions" style="margin-top:1.2rem">
+        <button class="btn" onclick="textOp('upper')">UPPERCASE</button>
+        <button class="btn" onclick="textOp('lower')">lowercase</button>
+        <button class="btn" onclick="textOp('title')">Title Case</button>
+        <button class="btn" onclick="textOp('sentence')">Sentence case</button>
+        <button class="btn" onclick="textOp('reverse')">esreveR</button>
+        <button class="btn" onclick="textOp('sort')">A→Z Sort</button>
+        <button class="btn" onclick="textOp('sortd')">Z→A Sort</button>
+        <button class="btn" onclick="textOp('dedupe')">Remove Dupes</button>
+        <button class="btn" onclick="textOp('trim')">Trim Spaces</button>
+        <button class="btn" onclick="textOp('slug')">slug-case</button>
+        <button class="btn" onclick="textOp('snake')">snake_case</button>
+        <button class="btn" onclick="textOp('camel')">camelCase</button>
+        <button class="btn green" id="copy-text-btn" onclick="copyTextFn()">📋 Copy</button>
+      </div>
+      <hr class="divider">
+      <label class="lbl">Find &amp; Replace</label>
+      <div class="row" style="margin-bottom:0">
+        <div class="col"><input type="text" id="find-input" placeholder="Find..."></div>
+        <div class="col"><input type="text" id="replace-input" placeholder="Replace with..."></div>
+        <button class="btn" onclick="findReplace()">Replace All</button>
+      </div>
+      <hr class="divider">
+      <label class="lbl">Base64</label>
+      <div class="row" style="gap:8px;flex-wrap:wrap">
+        <button class="btn purple" onclick="b64Encode()">Encode → Base64</button>
+        <button class="btn purple" onclick="b64Decode()">Decode ← Base64</button>
+      </div>
+      <div id="b64-output" class="hash-result" style="display:none;margin-top:0.75rem" onclick="navigator.clipboard.writeText(this.textContent)" title="Click to copy"></div>
+      <hr class="divider">
+      <label class="lbl">URL Encode / Decode</label>
+      <div class="row" style="gap:8px;flex-wrap:wrap">
+        <button class="btn" onclick="urlEncode()">URL Encode</button>
+        <button class="btn" onclick="urlDecode()">URL Decode</button>
+      </div>
+      <div id="url-output" class="hash-result" style="display:none;margin-top:0.75rem" onclick="navigator.clipboard.writeText(this.textContent)" title="Click to copy"></div>
+    </div>
+  </div>
+
+  <!-- 7. COLOR TOOLS -->
+  <div class="panel" id="panel-color">
+    <div class="panel-header"><span style="font-size:2rem">🎨</span><h2>Color Tools</h2></div>
+    <div class="panel-body">
+      <!-- Top: picker + preview side by side -->
+      <div style="display:flex;gap:1.5rem;align-items:stretch;flex-wrap:wrap;margin-bottom:1.5rem">
+        <div style="flex:0 0 auto">
+          <label class="lbl">Pick</label>
+          <input type="color" id="main-color-input" value="#00e5ff" oninput="updateColor()" style="width:80px;height:80px;border-radius:12px;border:2px solid var(--border);background:none;cursor:pointer;display:block">
+        </div>
+        <div id="main-color-preview" style="flex:1;min-width:120px;background:#00e5ff;border-radius:12px;border:1px solid var(--border);min-height:80px;position:relative;overflow:hidden">
+          <div id="col-hex-big" style="position:absolute;bottom:10px;left:14px;font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:3px;color:rgba(0,0,0,0.5);text-shadow:0 1px 0 rgba(255,255,255,0.2)">#00E5FF</div>
+        </div>
+      </div>
+      <!-- Color values grid -->
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1.5rem">
+        <div class="col-val-box" onclick="copyColVal(this)" data-val="col-hex-val">
+          <div class="col-val-lbl">HEX</div>
+          <div class="col-val-num" id="col-hex-val">#00E5FF</div>
+          <div class="col-val-copy">copy</div>
+        </div>
+        <div class="col-val-box" onclick="copyColVal(this)" data-val="col-rgb-val">
+          <div class="col-val-lbl">RGB</div>
+          <div class="col-val-num" id="col-rgb-val">0, 229, 255</div>
+          <div class="col-val-copy">copy</div>
+        </div>
+        <div class="col-val-box" onclick="copyColVal(this)" data-val="col-hsl-val">
+          <div class="col-val-lbl">HSL</div>
+          <div class="col-val-num" id="col-hsl-val">186° 100% 50%</div>
+          <div class="col-val-copy">copy</div>
+        </div>
+        <div class="col-val-box" onclick="copyColVal(this)" data-val="col-cmyk-val">
+          <div class="col-val-lbl">CMYK</div>
+          <div class="col-val-num" id="col-cmyk-val">0% 10% 0% 0%</div>
+          <div class="col-val-copy">copy</div>
+        </div>
+      </div>
+      <!-- Hex input field -->
+      <div style="margin-bottom:1.5rem">
+        <label class="lbl">Enter HEX manually</label>
+        <input type="text" id="hex-manual" placeholder="#00e5ff" maxlength="7" oninput="hexManual(this.value)" style="font-family:'DM Mono',monospace;letter-spacing:2px">
+      </div>
+      <hr class="divider">
+      <!-- Palette section -->
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:1rem">
+        <label class="lbl" style="margin:0">Palette Generator</label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="pal-btn active" id="pal-shades" onclick="switchPal('shades',this)">Shades</button>
+          <button class="pal-btn" id="pal-analogous" onclick="switchPal('analogous',this)">Analogous</button>
+          <button class="pal-btn" id="pal-complement" onclick="switchPal('complement',this)">Complementary</button>
+          <button class="pal-btn" id="pal-triadic" onclick="switchPal('triadic',this)">Triadic</button>
+        </div>
+      </div>
+      <div id="palette-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px"></div>
+      <div id="pal-hex-row" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:6px"></div>
+    </div>
+  </div>
+
+  <!-- 8. HASH -->
+  <div class="panel" id="panel-hash">
+    <div class="panel-header"><span style="font-size:2rem">🔐</span><h2>Hash Generator</h2></div>
+    <div class="panel-body">
+      <label class="lbl">Input Text</label>
+      <textarea id="hash-input" rows="4" placeholder="Type to generate hashes in real-time..." style="resize:vertical" oninput="generateHashes()"></textarea>
+      <div id="hash-results" style="margin-top:1.5rem"></div>
+    </div>
+  </div>
+
+  <!-- 9. MARKDOWN -->
+  <div class="panel" id="panel-markdown">
+    <div class="panel-header"><span style="font-size:2rem">📄</span><h2>Markdown Preview</h2></div>
+    <div class="panel-body">
+      <div class="md-wrap">
+        <div>
+          <label class="lbl">Markdown Source</label>
+          <textarea id="md-input" rows="18" placeholder="# Hello World&#10;&#10;Type **markdown** here..." oninput="renderMarkdown()" style="resize:vertical;height:440px"></textarea>
+        </div>
+        <div>
+          <label class="lbl">Live Preview</label>
+          <div class="md-preview" id="md-preview"></div>
+        </div>
+      </div>
+      <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn green" onclick="copyMdHtml()">📋 Copy HTML</button>
+        <button class="btn" onclick="loadMdSample()">Load Sample</button>
+        <button class="btn orange" onclick="document.getElementById('md-input').value='';document.getElementById('md-preview').innerHTML=''">🗑 Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. TIMER -->
+  <div class="panel" id="panel-timer">
+    <div class="panel-header"><span style="font-size:2rem">⏱️</span><h2>Stopwatch &amp; Timer</h2></div>
+    <div class="panel-body">
+      <div style="display:flex;gap:8px;justify-content:center;margin-bottom:1.5rem">
+        <button class="unit-tab active" id="sw-tab" onclick="switchMode('sw')">Stopwatch</button>
+        <button class="unit-tab" id="ct-tab" onclick="switchMode('ct')">Countdown</button>
+      </div>
+      <div id="sw-mode">
+        <div class="timer-display" id="sw-display">00:00:00.0</div>
+        <div class="timer-btns">
+          <button class="btn primary" id="sw-start" onclick="swToggle()">▶ Start</button>
+          <button class="btn" id="sw-lap" onclick="swLap()" disabled>⊕ Lap</button>
+          <button class="btn orange" onclick="swReset()">↺ Reset</button>
+        </div>
+        <div class="lap-list" id="lap-list" style="display:none"></div>
+      </div>
+      <div id="ct-mode" style="display:none">
+        <div class="row" style="justify-content:center;max-width:320px;margin:0 auto 1.5rem">
+          <div class="col" style="text-align:center"><label class="lbl">Hours</label><input type="number" id="ct-h" value="0" min="0" max="99" style="text-align:center"></div>
+          <div class="col" style="text-align:center"><label class="lbl">Minutes</label><input type="number" id="ct-m" value="5" min="0" max="59" style="text-align:center"></div>
+          <div class="col" style="text-align:center"><label class="lbl">Seconds</label><input type="number" id="ct-s" value="0" min="0" max="59" style="text-align:center"></div>
+        </div>
+        <div class="timer-display" id="ct-display">05:00</div>
+        <div class="timer-btns">
+          <button class="btn primary" id="ct-start" onclick="ctToggle()">▶ Start</button>
+          <button class="btn orange" onclick="ctReset()">↺ Reset</button>
+        </div>
+        <div id="ct-done" class="msg success" style="display:none;text-align:center;margin-top:1rem;font-size:1rem">🎉 Time's up!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. LOAN CALC -->
+  <div class="panel" id="panel-loan">
+    <div class="panel-header"><span style="font-size:2rem">🏦</span><h2>Loan Calculator</h2></div>
+    <div class="panel-body">
+      <div class="row">
+        <div class="col"><label class="lbl">Loan Amount ($)</label><input type="number" id="loan-amount" value="250000" min="0" oninput="calcLoan()"></div>
+        <div class="col"><label class="lbl">Annual Rate (%)</label><input type="number" id="loan-rate" value="6.5" min="0" step="0.1" oninput="calcLoan()"></div>
+        <div class="col"><label class="lbl">Term (Years)</label><input type="number" id="loan-term" value="30" min="1" oninput="calcLoan()"></div>
+      </div>
+      <div class="loan-result-grid" id="loan-results"></div>
+      <div style="margin-top:1rem">
+        <button class="btn purple" onclick="toggleAmort()">📋 Toggle Amortization Table</button>
+      </div>
+      <div class="amort-wrap" id="amort-wrap" style="display:none">
+        <table class="amort-table">
+          <thead><tr><th>#</th><th>Payment</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead>
+          <tbody id="amort-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12. PASSWORD GEN -->
+  <div class="panel" id="panel-password">
+    <div class="panel-header"><span style="font-size:2rem">🔑</span><h2>Password Generator</h2></div>
+    <div class="panel-body">
+      <div class="pass-output" id="pass-output" onclick="copyPass()" title="Click to copy">Click Generate</div>
+      <div class="pass-strength-bar" id="pass-strength-bar"></div>
+      <div id="pass-strength-label" style="font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--muted);text-align:right;margin-top:4px"></div>
+      <hr class="divider">
+      <div class="row" style="margin-bottom:1rem">
+        <div class="col"><label class="lbl">Length</label><input type="number" id="pass-len" value="16" min="4" max="128" oninput="generatePassword()"></div>
+        <div class="col"><label class="lbl">Count (multi)</label><input type="number" id="pass-count" value="5" min="1" max="20"></div>
+      </div>
+      <div class="checkrow"><input type="checkbox" id="pass-upper" checked onchange="generatePassword()"><span>Uppercase (A-Z)</span></div>
+      <div class="checkrow"><input type="checkbox" id="pass-lower" checked onchange="generatePassword()"><span>Lowercase (a-z)</span></div>
+      <div class="checkrow"><input type="checkbox" id="pass-nums" checked onchange="generatePassword()"><span>Numbers (0-9)</span></div>
+      <div class="checkrow"><input type="checkbox" id="pass-syms" checked onchange="generatePassword()"><span>Symbols (!@#$%^&amp;*)</span></div>
+      <div class="checkrow"><input type="checkbox" id="pass-ambig" onchange="generatePassword()"><span>Exclude ambiguous chars (0Ol1I)</span></div>
+      <div style="margin-top:1.2rem;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn primary" onclick="generatePassword()">⚡ Generate</button>
+        <button class="btn green" id="pass-copy-btn" onclick="copyPass()">📋 Copy</button>
+        <button class="btn orange" onclick="generateMulti()">📋 Generate Multiple</button>
+      </div>
+      <div id="pass-multi" style="margin-top:1rem"></div>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+// ═══════════════════════════════════════
+// TOOL REGISTRY & NAVIGATION
+// ═══════════════════════════════════════
+const tools=[
+  {id:'converter',icon:'🔄',name:'File Converter',desc:'Images·Text·Data',color:'#00e5ff',panel:'panel-converter'},
+  {id:'calc',icon:'🧮',name:'Sci Calculator',desc:'Full scientific',color:'#a855f7',panel:'panel-calc'},
+  {id:'bgremove',icon:'✂️',name:'BG Remover',desc:'Remove backgrounds',color:'#ff6b35',panel:'panel-bgremove'},
+  {id:'qr',icon:'▦',name:'QR Generator',desc:'Instant QR codes',color:'#22c55e',panel:'panel-qr'},
+  {id:'units',icon:'📐',name:'Unit Converter',desc:'10 categories',color:'#f59e0b',panel:'panel-units'},
+  {id:'text',icon:'📝',name:'Text Tools',desc:'Transform & analyze',color:'#06b6d4',panel:'panel-text'},
+  {id:'color',icon:'🎨',name:'Color Tools',desc:'HEX·RGB·Palette',color:'#ec4899',panel:'panel-color'},
+  {id:'hash',icon:'🔐',name:'Hash Generator',desc:'SHA·live hashing',color:'#84cc16',panel:'panel-hash'},
+  {id:'markdown',icon:'📄',name:'Markdown',desc:'Live preview',color:'#f97316',panel:'panel-markdown'},
+  {id:'timer',icon:'⏱️',name:'Timer',desc:'Stopwatch & countdown',color:'#14b8a6',panel:'panel-timer'},
+  {id:'loan',icon:'🏦',name:'Loan Calc',desc:'Amortization',color:'#8b5cf6',panel:'panel-loan'},
+  {id:'password',icon:'🔑',name:'Password Gen',desc:'Cryptographically secure',color:'#ef4444',panel:'panel-password'},
+];
+const cardsEl=document.getElementById('tool-cards');
+tools.forEach(t=>{
+  const c=document.createElement('div');c.className='tool-card';c.style.setProperty('--card-color',t.color);
+  c.innerHTML=`<span class="tool-icon">${t.icon}</span><div class="tool-name">${t.name}</div><div class="tool-desc">${t.desc}</div>`;
+  c.onclick=()=>openTool(t.id);cardsEl.appendChild(c);
+});
+function openTool(id){
+  document.querySelectorAll('.tool-card').forEach((c,i)=>c.classList.toggle('active',tools[i].id===id));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('visible'));
+  const t=tools.find(t=>t.id===id);
+  if(t){const p=document.getElementById(t.panel);p.classList.add('visible');setTimeout(()=>p.scrollIntoView({behavior:'smooth',block:'start'}),50);}
+}
+function setupDrop(zoneId,cb){
+  const z=document.getElementById(zoneId);
+  z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('dragover');});
+  z.addEventListener('dragleave',()=>z.classList.remove('dragover'));
+  z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f)cb(f);});
+}
+function formatBytes(b){if(b<1024)return b+' B';if(b<1048576)return (b/1024).toFixed(1)+' KB';return (b/1048576).toFixed(2)+' MB';}
+
+// ═══════════════════════════════════════
+// FILE CONVERTER — EXPANDED
+// ═══════════════════════════════════════
+const cvtTypes = {
+  image: {
+    icon:'🖼️', hint:'PNG · JPEG · WebP · BMP · GIF · SVG',
+    accept:'image/*',
+    targets:['PNG','JPEG','WebP','BMP'],
+    info:'Convert between image formats. All processing happens in your browser.'
+  },
+  pdf: {
+    icon:'📑', hint:'TXT · HTML · Markdown · CSV → PDF  |  Images → PDF',
+    accept:'image/*,text/*,.html,.htm,.md,.txt,.csv',
+    targets:['PDF (from text/HTML)','PDF (from image)','PDF (multi-page images)'],
+    info:'Generate PDF documents from text, HTML pages, Markdown, or images — entirely in-browser using canvas.'
+  },
+  doc: {
+    icon:'📝', hint:'HTML · TXT · Markdown',
+    accept:'.html,.htm,.txt,.md,text/*',
+    targets:['TXT (strip tags)','Markdown (basic)','HTML page'],
+    info:'Convert between document-like text formats.'
+  },
+  data: {
+    icon:'📊', hint:'CSV · JSON · XML · TSV · HTML Table',
+    accept:'.csv,.json,.xml,.tsv,text/*',
+    targets:['JSON','CSV','TSV','XML','HTML Table'],
+    info:'Transform data formats. CSV ↔ JSON ↔ XML and more.'
+  },
+  text: {
+    icon:'📄', hint:'TXT · Any text file',
+    accept:'text/*,.txt,.md,.js,.py,.css,.html,.json,.xml,.csv',
+    targets:['Base64 encode','ROT13','URL encode','Reverse lines','JSON array of lines','HTML page'],
+    info:'Text transformation and encoding utilities.'
+  },
+  audio: {
+    icon:'🎵', hint:'Audio format info & metadata (browser limitations apply)',
+    accept:'audio/*',
+    targets:['WAV → note','MP3 → note'],
+    info:'⚠ Browsers cannot encode most audio formats natively. This mode will report file info only.'
+  },
+};
+
+let cvtFile=null, activeCvtType='image';
+
+function setCvtType(type) {
+  activeCvtType = type;
+  document.querySelectorAll('.cvt-type-tile').forEach(t => t.classList.toggle('active', t.dataset.type===type));
+  const cfg = cvtTypes[type];
+  document.getElementById('cvt-drop-icon').textContent = cfg.icon;
+  document.getElementById('cvt-drop-hint').textContent = cfg.hint;
+  document.getElementById('file-input').accept = cfg.accept;
+  document.getElementById('cvt-info-box').textContent = cfg.info;
+  document.getElementById('convert-btn').disabled = true;
+  document.getElementById('file-info-display').innerHTML = '';
+  document.getElementById('convert-result-area').innerHTML = '';
+  cvtFile = null;
+  // reset targets
+  const sel = document.getElementById('convert-to'); sel.innerHTML='';
+  cfg.targets.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;sel.appendChild(o);});
+}
+setCvtType('image'); // init
+
+document.getElementById('file-input').addEventListener('change',e=>handleFileSelect(e.target.files[0]));
+setupDrop('file-drop',handleFileSelect);
+
+function handleFileSelect(file) {
+  cvtFile=file;
+  const ext=file.name.split('.').pop().toUpperCase();
+  document.getElementById('file-info-display').innerHTML=`<div class="file-info"><span style="font-size:1.5rem">📄</span><div><div style="color:var(--text)">${file.name}</div><div style="color:var(--muted);font-size:0.72rem">${formatBytes(file.size)} · ${ext} · ${file.type||'unknown'}</div></div></div>`;
+  document.getElementById('convert-btn').disabled=false;
+  document.getElementById('convert-result-area').innerHTML='';
+  // auto-detect type and set targets
+  autoDetectType(file);
+}
+
+function autoDetectType(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  if(file.type.startsWith('image/') || ['png','jpg','jpeg','webp','bmp','gif','svg'].includes(ext)) setCvtType('image');
+  else if(['csv','tsv'].includes(ext) || file.type==='text/csv') setCvtType('data');
+  else if(ext==='json' || file.type==='application/json') setCvtType('data');
+  else if(['xml'].includes(ext)) setCvtType('data');
+  else if(['html','htm'].includes(ext) || file.type==='text/html') setCvtType('doc');
+  else if(file.type.startsWith('audio/')) setCvtType('audio');
+  else setCvtType('text');
+}
+
+function convertFile() {
+  const file=cvtFile; if(!file)return;
+  const to=document.getElementById('convert-to').value;
+  const type=activeCvtType;
+
+  // IMAGE conversions
+  if(type==='image') {
+    const r=new FileReader(); r.onload=e=>{
+      const img=new Image(); img.onload=()=>{
+        const c=document.createElement('canvas'); c.width=img.width; c.height=img.height;
+        const ctx=c.getContext('2d');
+        if(to==='JPEG'||to==='BMP'){ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);}
+        ctx.drawImage(img,0,0);
+        const mimes={PNG:'image/png',JPEG:'image/jpeg',WebP:'image/webp',BMP:'image/bmp'};
+        c.toBlob(blob=>showCvtResult(file.name.replace(/\.[^.]+$/,'')+'.'+to.toLowerCase(),blob),mimes[to]||'image/png',0.92);
+      }; img.src=e.target.result;
+    }; r.readAsDataURL(file); return;
+  }
+
+  // PDF conversions
+  if(type==='pdf') {
+    if(to==='PDF (from image)' || to==='PDF (multi-page images)') {
+      const r=new FileReader(); r.onload=e=>{
+        const img=new Image(); img.onload=()=>{
+          const c=document.createElement('canvas'); c.width=img.width; c.height=img.height;
+          c.getContext('2d').drawImage(img,0,0);
+          const imgData=c.toDataURL('image/jpeg',0.92);
+          const pdfBytes=buildImagePDF(imgData, img.width, img.height);
+          showCvtResult(file.name.replace(/\.[^.]+$/,'')+'.pdf', new Blob([pdfBytes],{type:'application/pdf'}));
+        }; img.src=e.target.result;
+      }; r.readAsDataURL(file); return;
+    }
+    if(to==='PDF (from text/HTML)') {
+      const r=new FileReader(); r.onload=e=>{
+        const content=e.target.result;
+        const ext=file.name.split('.').pop().toLowerCase();
+        let html=content;
+        if(ext==='md'||ext==='txt') {
+          // convert md/txt to basic html for the PDF
+          html=`<html><head><meta charset="UTF-8"><style>body{font-family:Georgia,serif;line-height:1.7;padding:2cm;max-width:800px;color:#111}h1,h2,h3{margin-top:1.5em}code{background:#f0f0f0;padding:2px 5px;font-size:0.9em}pre{background:#f5f5f5;padding:1em;overflow:auto}</style></head><body>${simpleMarkdown(content)}</body></html>`;
+        }
+        const pdfBytes=buildHtmlPDF(html, file.name);
+        showCvtResult(file.name.replace(/\.[^.]+$/,'')+'.pdf', new Blob([pdfBytes],{type:'application/pdf'}));
+      }; r.readAsText(file); return;
+    }
+  }
+
+  // TEXT / DOC / DATA conversions
+  const r=new FileReader(); r.onload=e=>{
+    const content=e.target.result; let out='',ext2='txt',mime='text/plain';
+    try {
+      const fileExt=file.name.split('.').pop().toLowerCase();
+      if(to==='JSON'&&['csv','tsv'].includes(fileExt)) {
+        const sep=fileExt==='tsv'?'\t':',';
+        const rows=content.trim().split('\n');
+        const headers=rows[0].split(sep).map(h=>h.replace(/"/g,'').trim());
+        out=JSON.stringify(rows.slice(1).filter(Boolean).map(r2=>{const v=r2.split(sep);return Object.fromEntries(headers.map((h,i)=>[h,(v[i]||'').replace(/"/g,'').trim()]));}),null,2);
+        ext2='json';mime='application/json';
+      } else if(to==='CSV'&&fileExt==='json') {
+        const j=JSON.parse(content);const a=Array.isArray(j)?j:[j];const k=Object.keys(a[0]||{});
+        out=[k.join(','),...a.map(row=>k.map(key=>{const v=row[key]??'';return typeof v==='string'&&v.includes(',')? `"${v}"`:v;}).join(','))].join('\n');
+        ext2='csv';mime='text/csv';
+      } else if(to==='TSV') {
+        const rows=content.trim().split('\n');
+        out=rows.map(l=>l.split(',').join('\t')).join('\n'); ext2='tsv';
+      } else if(to==='XML'&&fileExt==='json') {
+        const j=JSON.parse(content);const a=Array.isArray(j)?j:[j];
+        out=`<?xml version="1.0" encoding="UTF-8"?>\n<root>\n`+a.map(o=>`  <item>\n`+Object.entries(o).map(([k2,v])=>`    <${k2}>${v}</${k2}>`).join('\n')+`\n  </item>`).join('\n')+`\n</root>`;
+        ext2='xml';mime='text/xml';
+      } else if(to==='HTML Table') {
+        const rows=content.trim().split('\n').map(l=>l.split(','));
+        const head=rows[0].map(h=>`<th>${h.replace(/"/g,'')}</th>`).join('');
+        const body=rows.slice(1).map(r2=>`<tr>${r2.map(c=>`<td>${c.replace(/"/g,'')}</td>`).join('')}</tr>`).join('\n');
+        out=`<!DOCTYPE html><html><head><style>*{box-sizing:border-box}body{font-family:sans-serif;padding:1rem}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px 12px;text-align:left}th{background:#f0f0f0;font-weight:600}tr:nth-child(even){background:#fafafa}</style></head><body><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></body></html>`;
+        ext2='html';mime='text/html';
+      } else if(to==='TXT (strip tags)') {
+        out=content.replace(/<script[\s\S]*?<\/script>/gi,'').replace(/<style[\s\S]*?<\/style>/gi,'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+      } else if(to==='Markdown (basic)') {
+        out=content.replace(/<h([1-6])[^>]*>(.*?)<\/h\1>/gi,(_,n,t)=>'#'.repeat(n)+' '+t.replace(/<[^>]+>/g,'')+'\n')
+          .replace(/<p[^>]*>(.*?)<\/p>/gi,(_, t)=>t.replace(/<[^>]+>/g,'')+'\n\n')
+          .replace(/<br\s*\/?>/gi,'\n').replace(/<strong>(.*?)<\/strong>/gi,'**$1**').replace(/<em>(.*?)<\/em>/gi,'_$1_')
+          .replace(/<a href="([^"]*)"[^>]*>(.*?)<\/a>/gi,'[$2]($1)').replace(/<[^>]+>/g,'').trim();
+        ext2='md';
+      } else if(to==='HTML page') {
+        out=`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:Georgia,serif;line-height:1.8;padding:2rem;max-width:800px;margin:0 auto;color:#222}</style></head><body><pre style="white-space:pre-wrap;font-family:inherit">${content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre></body></html>`;
+        ext2='html';mime='text/html';
+      } else if(to==='Base64 encode') {
+        out=btoa(unescape(encodeURIComponent(content)));
+      } else if(to==='ROT13') {
+        out=content.replace(/[a-zA-Z]/g,c=>String.fromCharCode((c<='Z'?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26));
+      } else if(to==='URL encode') {
+        out=encodeURIComponent(content);
+      } else if(to==='Reverse lines') {
+        out=content.split('\n').reverse().join('\n');
+      } else if(to==='JSON array of lines') {
+        out=JSON.stringify(content.split('\n').filter(Boolean),null,2); ext2='json';mime='application/json';
+      } else { out=content; }
+    } catch(err) { out=content; }
+    showCvtResult(file.name.replace(/\.[^.]+$/,'')+'.'+ext2, new Blob([out],{type:mime}));
+  }; r.readAsText(file);
+}
+
+// ── PDF builder helpers ──
+function buildImagePDF(dataUrl, imgW, imgH) {
+  // Scale to A4 (595x842 pts) keeping ratio
+  const A4W=595, A4H=842, margin=40;
+  const maxW=A4W-margin*2, maxH=A4H-margin*2;
+  const scale=Math.min(maxW/imgW, maxH/imgH, 1);
+  const w=Math.round(imgW*scale), h=Math.round(imgH*scale);
+  const x=Math.round((A4W-w)/2), y=Math.round((A4H-h)/2);
+  // strip data URL header
+  const b64=dataUrl.split(',')[1];
+  const imgBytes=atob(b64);
+  const imgLen=imgBytes.length;
+  // Build minimal PDF manually
+  const nl='\n';
+  let pdf='%PDF-1.4'+nl;
+  const offsets=[];
+  function obj(n,s){offsets[n]=pdf.length;pdf+=`${n} 0 obj\n${s}\nendobj\n`;}
+  // image stream
+  const imgStreamHeader=`<< /Type /XObject /Subtype /Image /Width ${imgW} /Height ${imgH} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${imgLen} >>`;
+  offsets[5]=pdf.length;
+  pdf+=`5 0 obj\n${imgStreamHeader}\nstream\n`;
+  // We'll track where stream content goes
+  const streamStart=pdf.length;
+  // We can't easily embed binary in a string; use blob approach instead
+  // Build as array of parts
+  const parts=[pdf];
+  parts.push(imgBytes);
+  const afterStream=`\nendstream\nendobj\n`;
+  parts.push(afterStream);
+  // Continue pdf as string
+  let pdf2='';
+  const pageContent=`q ${w} 0 0 ${h} ${x} ${y} cm /Im1 Do Q`;
+  const pageContentLen=pageContent.length;
+  pdf2+=`6 0 obj\n<< /Length ${pageContentLen} >>\nstream\n${pageContent}\nendstream\nendobj\n`;
+  pdf2+=`1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n`;
+  pdf2+=`2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n`;
+  pdf2+=`3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${A4W} ${A4H}] /Contents 6 0 R /Resources << /XObject << /Im1 5 0 R >> >> >>\nendobj\n`;
+  pdf2+=`4 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n`;
+  parts.push(pdf2);
+  // xref — approximate (won't be perfect but enough to open)
+  const xref=`xref\n0 7\n0000000000 65535 f \n0000000009 00000 n \n0000000058 00000 n \n0000000115 00000 n \n0000000266 00000 n \n0000000000 00000 n \n0000000000 00000 n \n`;
+  const trailer=`trailer\n<< /Size 7 /Root 1 0 R >>\nstartxref\n0\n%%EOF`;
+  parts.push(xref+trailer);
+  // Convert all parts to Uint8Array
+  let totalLen=0;
+  const byteArrays=parts.map(p=>{
+    if(typeof p==='string'){const a=new TextEncoder().encode(p);totalLen+=a.length;return a;}
+    else{const a=new Uint8Array(p.length);for(let i=0;i<p.length;i++)a[i]=p.charCodeAt(i)&0xff;totalLen+=a.length;return a;}
+  });
+  const result=new Uint8Array(totalLen);let pos=0;
+  byteArrays.forEach(a=>{result.set(a,pos);pos+=a.length;});
+  return result;
+}
+
+function buildHtmlPDF(htmlContent, filename) {
+  // Creates a print-ready HTML file that auto-triggers print dialog
+  const printHtml=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${filename}</title><style>@media print{body{margin:0}button{display:none}}body{font-family:Georgia,serif;line-height:1.7;padding:2cm;max-width:21cm;margin:0 auto;color:#111}h1,h2,h3{page-break-after:avoid}pre,table{page-break-inside:avoid}</style></head><body>${htmlContent}<script>window.onload=function(){window.print();}<\/script></body></html>`;
+  return new TextEncoder().encode(printHtml);
+}
+
+function simpleMarkdown(md) {
+  return md.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/^#{6}\s(.+)/gm,'<h6>$1</h6>').replace(/^#{5}\s(.+)/gm,'<h5>$1</h5>')
+    .replace(/^#{4}\s(.+)/gm,'<h4>$1</h4>').replace(/^#{3}\s(.+)/gm,'<h3>$1</h3>')
+    .replace(/^#{2}\s(.+)/gm,'<h2>$1</h2>').replace(/^#{1}\s(.+)/gm,'<h1>$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/`(.+?)`/g,'<code>$1</code>').replace(/^[-*]\s(.+)/gm,'<li>$1</li>')
+    .replace(/\n\n/g,'</p><p>');
+}
+
+function showCvtResult(name, blob) {
+  const url=URL.createObjectURL(blob);
+  const isPdf=name.endsWith('.pdf');
+  document.getElementById('convert-result-area').innerHTML=`
+    <div class="convert-arrow">↓</div>
+    <div class="file-info">
+      <span style="font-size:1.5rem">${isPdf?'📑':'✅'}</span>
+      <div><div style="color:var(--text)">${name}</div><div style="color:var(--muted);font-size:0.72rem">${formatBytes(blob.size)}</div></div>
+      <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+        <a href="${url}" download="${name}" class="btn primary">⬇ Download</a>
+        ${isPdf?`<a href="${url}" target="_blank" class="btn">👁 Preview</a>`:''}
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════
+// SCIENTIFIC CALCULATOR
+// ═══════════════════════════════════════
+let cCur='',cPrev='',cOp='',cAns=0,cHist=[];
+const cLayout=[
+  {l:'sin',c:'fn'},{l:'cos',c:'fn'},{l:'tan',c:'fn'},{l:'π',c:'fn'},{l:'e',c:'fn'},
+  {l:'sin⁻¹',c:'fn'},{l:'cos⁻¹',c:'fn'},{l:'tan⁻¹',c:'fn'},{l:'log',c:'fn'},{l:'ln',c:'fn'},
+  {l:'x²',c:'fn'},{l:'x³',c:'fn'},{l:'xⁿ',c:'op'},{l:'√',c:'fn'},{l:'∛',c:'fn'},
+  {l:'7',c:''},{l:'8',c:''},{l:'9',c:''},{l:'DEL',c:'clr'},{l:'AC',c:'clr'},
+  {l:'4',c:''},{l:'5',c:''},{l:'6',c:''},{l:'×',c:'op'},{l:'÷',c:'op'},
+  {l:'1',c:''},{l:'2',c:''},{l:'3',c:''},{l:'+',c:'op'},{l:'−',c:'op'},
+  {l:'±',c:'fn'},{l:'0',c:''},{l:'.',c:''},{l:'(',c:'op'},{l:')',c:'op'},
+  {l:'%',c:'fn'},{l:'EXP',c:'fn'},{l:'ANS',c:'fn'},{l:'=',c:'eq span2'},
+];
+function buildCalc(){
+  const g=document.getElementById('calc-grid');g.innerHTML='';
+  cLayout.forEach(({l,c})=>{const b=document.createElement('button');b.className='calc-btn '+c;b.textContent=l;b.onclick=()=>cp(l);g.appendChild(b);});
+}
+function cp(key){
+  const d=document.getElementById('calc-val'),e=document.getElementById('calc-expr');
+  if(key==='AC'){cCur='';cPrev='';cOp='';d.textContent='0';e.textContent='';return;}
+  if(key==='DEL'){cCur=cCur.slice(0,-1);d.textContent=cCur||'0';return;}
+  if(key==='ANS'){cCur=String(cAns);d.textContent=cCur;return;}
+  if(key==='±'){cCur=cCur.startsWith('-')?cCur.slice(1):'-'+cCur;d.textContent=cCur||'0';return;}
+  if('0123456789.'.includes(key)){if(key==='.'&&cCur.includes('.'))return;cCur+=key;d.textContent=cCur;return;}
+  const fn={'sin':v=>Math.sin(v*Math.PI/180),'cos':v=>Math.cos(v*Math.PI/180),'tan':v=>Math.tan(v*Math.PI/180),'sin⁻¹':v=>Math.asin(v)*180/Math.PI,'cos⁻¹':v=>Math.acos(v)*180/Math.PI,'tan⁻¹':v=>Math.atan(v)*180/Math.PI,'log':v=>Math.log10(v),'ln':v=>Math.log(v),'x²':v=>v*v,'x³':v=>v*v*v,'√':v=>Math.sqrt(v),'∛':v=>Math.cbrt(v),'%':v=>v/100};
+  if(fn[key]){const v=parseFloat(cCur||cPrev||0),r=rnd(fn[key](v));e.textContent=`${key}(${v}) =`;cCur=String(r);d.textContent=cCur;addCH(`${key}(${v})`,r);return;}
+  if(key==='π'){cCur=String(Math.PI);d.textContent=cCur;return;}
+  if(key==='e'){cCur=String(Math.E);d.textContent=cCur;return;}
+  if(key==='EXP'){cCur+='e';d.textContent=cCur;return;}
+  if(key==='('||key===')'){cCur+=key;d.textContent=cCur;return;}
+  if(key==='xⁿ'){cPrev=cCur;cOp='pow';cCur='';e.textContent=cPrev+' ^';return;}
+  if(key==='='){if(cOp==='pow'){const r=rnd(Math.pow(parseFloat(cPrev),parseFloat(cCur)));addCH(`${cPrev}^${cCur}`,r);e.textContent=`${cPrev}^${cCur} =`;cCur=String(r);d.textContent=cCur;cAns=r;cOp='';cPrev='';return;}doCalc();return;}
+  const opMap={'×':'*','÷':'/','+':`+`,'−':'-'};
+  if(opMap[key]){if(cCur){if(cPrev&&cOp)doCalc();else cPrev=cCur;cCur='';}cOp=opMap[key];e.textContent=cPrev+' '+key;}
+}
+function doCalc(){if(!cPrev||!cCur)return;const a=parseFloat(cPrev),b=parseFloat(cCur);if(cOp==='/'&&b===0){document.getElementById('calc-val').textContent='ERR';return;}const ops={'+':a+b,'-':a-b,'*':a*b,'/':a/b};const result=rnd(ops[cOp]);const sym={'+':'+','-':'−','*':'×','/':'÷'}[cOp];document.getElementById('calc-expr').textContent=`${a} ${sym} ${b} =`;cAns=result;addCH(`${a} ${sym} ${b}`,result);cCur=String(result);document.getElementById('calc-val').textContent=cCur;cPrev='';cOp='';}
+function rnd(n){return isNaN(n)?NaN:Math.round(n*1e10)/1e10;}
+function addCH(expr,val){cHist.unshift({expr,val});const h=document.getElementById('calc-history');h.style.display='block';h.innerHTML=cHist.slice(0,10).map(x=>`<div class="calc-history-item"><span style="color:var(--muted)">${x.expr}</span><strong style="color:var(--accent)">${x.val}</strong></div>`).join('');}
+buildCalc();
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('panel-calc').classList.contains('visible'))return;
+  const map={'Enter':'=','Backspace':'DEL','Escape':'AC','*':'×','/':'÷','-':'−'};
+  const k=map[e.key]||e.key;
+  if(cLayout.find(b=>b.l===k)){e.preventDefault();cp(k);}
+});
+
+// ═══════════════════════════════════════
+// BACKGROUND REMOVER — FIXED
+// ═══════════════════════════════════════
+let bgImg=null,bgColor=[255,255,255];
+const bgSrc=document.getElementById('bg-source-canvas');
+const bgRes=document.getElementById('bg-result-canvas');
+const bgClick=document.getElementById('bg-click-canvas');
+const bgCtx=bgClick.getContext('2d');
+
+document.getElementById('bg-input').addEventListener('change',e=>loadBgFile(e.target.files[0]));
+setupDrop('bg-drop',f=>{
+  const dt=new DataTransfer();dt.items.add(f);
+  const inp=document.getElementById('bg-input');inp.files=dt.files;loadBgFile(f);
+});
+function loadBgFile(file){
+  const r=new FileReader();r.onload=ev=>{
+    bgImg=new Image();bgImg.onload=()=>{
+      bgSrc.width=bgImg.width;bgSrc.height=bgImg.height;bgSrc.getContext('2d').drawImage(bgImg,0,0);
+      bgClick.width=bgImg.width;bgClick.height=bgImg.height;bgCtx.drawImage(bgImg,0,0);
+      document.getElementById('bg-editor').style.display='block';
+    };bgImg.src=ev.target.result;
+  };r.readAsDataURL(file);
+}
+bgClick.addEventListener('click',e=>{
+  if(!bgImg)return;
+  const rect=bgClick.getBoundingClientRect();
+  const sx=bgImg.width/rect.width,sy=bgImg.height/rect.height;
+  const x=Math.floor((e.clientX-rect.left)*sx),y=Math.floor((e.clientY-rect.top)*sy);
+  const px=bgSrc.getContext('2d').getImageData(x,y,1,1).data;
+  bgColor=[px[0],px[1],px[2]];
+  document.getElementById('bg-picked-swatch').style.background=`rgb(${px[0]},${px[1]},${px[2]})`;
+  document.getElementById('bg-picked-label').textContent=`rgb(${px[0]}, ${px[1]}, ${px[2]}) — picked`;
+  document.querySelectorAll('#bg-presets .color-swatch').forEach(s=>s.classList.remove('sel'));
+  // draw crosshair
+  bgCtx.drawImage(bgImg,0,0);
+  bgCtx.strokeStyle='#00e5ff';bgCtx.lineWidth=Math.max(2,bgImg.width/250);
+  bgCtx.beginPath();bgCtx.moveTo(x-18,y);bgCtx.lineTo(x+18,y);bgCtx.stroke();
+  bgCtx.beginPath();bgCtx.moveTo(x,y-18);bgCtx.lineTo(x,y+18);bgCtx.stroke();
+});
+document.querySelectorAll('#bg-presets .color-swatch').forEach(s=>{
+  s.onclick=()=>{
+    document.querySelectorAll('#bg-presets .color-swatch').forEach(x=>x.classList.remove('sel'));
+    s.classList.add('sel');bgColor=s.dataset.rgb.split(',').map(Number);
+    document.getElementById('bg-picked-swatch').style.background=`rgb(${bgColor.join(',')})`;
+    document.getElementById('bg-picked-label').textContent=`rgb(${bgColor.join(', ')}) — preset selected`;
+  };
+});
+function removeBackground(){
+  if(!bgImg)return;
+  const w=bgSrc.width,h=bgSrc.height;
+  bgRes.width=w;bgRes.height=h;
+  const src=bgSrc.getContext('2d').getImageData(0,0,w,h);
+  const resCtx=bgRes.getContext('2d');
+  const res=resCtx.createImageData(w,h);
+  const d=src.data,r=res.data;
+  const tol=parseInt(document.getElementById('bg-tolerance').value);
+  const[tr,tg,tb]=bgColor;
+  for(let i=0;i<d.length;i+=4){
+    const dr=d[i]-tr,dg=d[i+1]-tg,db=d[i+2]-tb;
+    r[i]=d[i];r[i+1]=d[i+1];r[i+2]=d[i+2];
+    r[i+3]=Math.sqrt(dr*dr+dg*dg+db*db)<tol?0:255;
+  }
+  resCtx.putImageData(res,0,0);
+  document.getElementById('bg-result-img').src=bgRes.toDataURL('image/png');
+  document.getElementById('bg-dl-btn').disabled=false;
+}
+function downloadBgResult(){const a=document.createElement('a');a.href=bgRes.toDataURL('image/png');a.download='bg-removed.png';a.click();}
+
+// ═══════════════════════════════════════
+// QR CODE — TYPED
+// ═══════════════════════════════════════
+const qrTypeFields = {
+  url: {
+    fields: [{ id:'qr-url', label:'Website URL', placeholder:'https://example.com', type:'text' }],
+    build: () => v('qr-url') || 'https://example.com'
+  },
+  text: {
+    fields: [{ id:'qr-text', label:'Text Content', placeholder:'Type anything here...', type:'textarea' }],
+    build: () => v('qr-text')
+  },
+  wifi: {
+    fields: [
+      { id:'qr-wifi-ssid', label:'Network Name (SSID)', placeholder:'MyNetwork', type:'text' },
+      { id:'qr-wifi-pass', label:'Password', placeholder:'password123', type:'text' },
+      { id:'qr-wifi-enc', label:'Security', type:'select', options:['WPA','WEP','nopass'] },
+      { id:'qr-wifi-hidden', label:'Hidden network?', type:'select', options:['false','true'] },
+    ],
+    build: () => `WIFI:T:${v('qr-wifi-enc')};S:${v('qr-wifi-ssid')};P:${v('qr-wifi-pass')};H:${v('qr-wifi-hidden')};;`
+  },
+  email: {
+    fields: [
+      { id:'qr-email-to', label:'To', placeholder:'name@example.com', type:'text' },
+      { id:'qr-email-sub', label:'Subject', placeholder:'Hello!', type:'text' },
+      { id:'qr-email-body', label:'Body (optional)', placeholder:'Message...', type:'textarea' },
+    ],
+    build: () => `mailto:${v('qr-email-to')}?subject=${encodeURIComponent(v('qr-email-sub'))}&body=${encodeURIComponent(v('qr-email-body'))}`
+  },
+  phone: {
+    fields: [{ id:'qr-phone', label:'Phone Number', placeholder:'+1 555 000 0000', type:'text' }],
+    build: () => `tel:${v('qr-phone').replace(/\s/g,'')}`
+  },
+  sms: {
+    fields: [
+      { id:'qr-sms-num', label:'Phone Number', placeholder:'+1 555 000 0000', type:'text' },
+      { id:'qr-sms-msg', label:'Message (optional)', placeholder:'Hey!', type:'textarea' },
+    ],
+    build: () => `smsto:${v('qr-sms-num')}:${v('qr-sms-msg')}`
+  },
+  vcard: {
+    fields: [
+      { id:'qr-vc-name', label:'Full Name', placeholder:'Jane Smith', type:'text' },
+      { id:'qr-vc-org', label:'Company / Org', placeholder:'Acme Corp', type:'text' },
+      { id:'qr-vc-phone', label:'Phone', placeholder:'+1 555 000 0000', type:'text' },
+      { id:'qr-vc-email', label:'Email', placeholder:'jane@example.com', type:'text' },
+      { id:'qr-vc-url', label:'Website', placeholder:'https://example.com', type:'text' },
+      { id:'qr-vc-note', label:'Note', placeholder:'Any extra info', type:'text' },
+    ],
+    build: () => `BEGIN:VCARD\nVERSION:3.0\nFN:${v('qr-vc-name')}\nORG:${v('qr-vc-org')}\nTEL:${v('qr-vc-phone')}\nEMAIL:${v('qr-vc-email')}\nURL:${v('qr-vc-url')}\nNOTE:${v('qr-vc-note')}\nEND:VCARD`
+  },
+  geo: {
+    fields: [
+      { id:'qr-lat', label:'Latitude', placeholder:'40.7128', type:'text' },
+      { id:'qr-lng', label:'Longitude', placeholder:'-74.0060', type:'text' },
+    ],
+    build: () => `geo:${v('qr-lat')},${v('qr-lng')}`
+  },
+};
+
+let activeQRType = 'url';
+function v(id) { const el=document.getElementById(id); return el ? el.value.trim() : ''; }
+
+function setQRType(type, btn) {
+  activeQRType = type;
+  document.querySelectorAll('.qr-type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderQRFields(type);
+  generateQR();
+}
+
+function renderQRFields(type) {
+  const cfg = qrTypeFields[type];
+  const container = document.getElementById('qr-fields');
+  container.innerHTML = cfg.fields.map(f => {
+    const inputId = `id="${f.id}" oninput="generateQR()"`;
+    if (f.type === 'textarea') {
+      return `<div style="margin-bottom:0.85rem"><label class="lbl">${f.label}</label><textarea ${inputId} rows="3" placeholder="${f.placeholder||''}" style="resize:vertical"></textarea></div>`;
+    } else if (f.type === 'select') {
+      const opts = f.options.map(o=>`<option value="${o}">${o}</option>`).join('');
+      return `<div style="margin-bottom:0.85rem"><label class="lbl">${f.label}</label><select ${inputId}>${opts}</select></div>`;
+    } else {
+      return `<div style="margin-bottom:0.85rem"><label class="lbl">${f.label}</label><input type="text" ${inputId} placeholder="${f.placeholder||''}"></div>`;
+    }
+  }).join('');
+  // multi-column layout for fields with many short inputs
+  if (cfg.fields.length > 3) container.style.display = 'grid';
+  else container.style.display = 'block';
+}
+
+function generateQR() {
+  const cfg = qrTypeFields[activeQRType];
+  let text = '';
+  try { text = cfg.build(); } catch(e) { return; }
+  if (!text || text.replace(/[:\s;]/g,'').length < 2) {
+    document.getElementById('qr-output').innerHTML = '';
+    document.getElementById('qr-dl').style.display = 'none';
+    document.getElementById('qr-encoded-preview').style.display = 'none';
+    return;
+  }
+  // show encoded string
+  document.getElementById('qr-encoded-preview').style.display = 'block';
+  document.getElementById('qr-encoded-text').textContent = text;
+
+  const size = parseInt(document.getElementById('qr-size').value);
+  const ec = document.getElementById('qr-ec').value;
+  const out = document.getElementById('qr-output');
+  out.innerHTML = '<div id="qr-target" style="background:#fff;padding:14px;border-radius:12px;display:inline-block;box-shadow:0 4px 24px rgba(0,0,0,0.4)"></div>';
+  try {
+    new QRCode(document.getElementById('qr-target'), {
+      text, width:size, height:size,
+      colorDark:'#000000', colorLight:'#ffffff',
+      correctLevel: QRCode.CorrectLevel[ec]
+    });
+    document.getElementById('qr-dl').style.display = 'block';
+  } catch(e) {
+    out.innerHTML = '<div class="msg error">Could not generate QR — try shorter content or higher error correction</div>';
+  }
+}
+
+function downloadQR() {
+  const canvas = document.querySelector('#qr-target canvas');
+  const img = document.querySelector('#qr-target img');
+  const a = document.createElement('a');
+  if (canvas) a.href = canvas.toDataURL();
+  else if (img) a.href = img.src;
+  else return;
+  a.download = `qr-${activeQRType}.png`; a.click();
+}
+
+// Init QR
+renderQRFields('url');
+setTimeout(() => {
+  document.getElementById('qr-url').value = 'https://example.com';
+  generateQR();
+}, 450);
+
+// ═══════════════════════════════════════
+// UNIT CONVERTER
+// ═══════════════════════════════════════
+const uCats={
+  Length:{units:['Meter','Kilometer','Mile','Yard','Foot','Inch','Centimeter','Millimeter','Nautical Mile'],toBase:[1,1000,1609.344,0.9144,0.3048,0.0254,0.01,0.001,1852]},
+  Weight:{units:['Kilogram','Gram','Pound','Ounce','Ton','Stone'],toBase:[1,0.001,0.453592,0.0283495,1000,6.35029]},
+  Temperature:{units:['Celsius','Fahrenheit','Kelvin'],special:true},
+  Area:{units:['Sq. Meter','Sq. Km','Sq. Mile','Hectare','Acre','Sq. Foot','Sq. Yard'],toBase:[1,1e6,2589988.11,10000,4046.86,0.092903,0.836127]},
+  Volume:{units:['Liter','Milliliter','Gallon (US)','Quart','Pint','Cup','Fluid Oz','Cubic Meter'],toBase:[1,0.001,3.78541,0.946353,0.473176,0.236588,0.0295735,1000]},
+  Speed:{units:['m/s','km/h','mph','Knot','ft/s'],toBase:[1,0.277778,0.44704,0.514444,0.3048]},
+  Time:{units:['Second','Minute','Hour','Day','Week','Month','Year'],toBase:[1,60,3600,86400,604800,2629800,31557600]},
+  Data:{units:['Byte','Kilobyte','Megabyte','Gigabyte','Terabyte','Bit','Kilobit','Megabit','Gigabit'],toBase:[1,1024,1048576,1073741824,1099511627776,0.125,128,131072,134217728]},
+  Pressure:{units:['Pascal','Bar','PSI','Atmosphere','mmHg','kPa'],toBase:[1,100000,6894.76,101325,133.322,1000]},
+  Energy:{units:['Joule','Kilojoule','Calorie','kCal','Wh','kWh','BTU'],toBase:[1,1000,4.184,4184,3600,3600000,1055.06]},
+};
+let uCat='Length';
+function buildUnitTabs(){const t=document.getElementById('unit-tabs');t.innerHTML='';Object.keys(uCats).forEach(cat=>{const b=document.createElement('button');b.className='unit-tab'+(cat===uCat?' active':'');b.textContent=cat;b.onclick=()=>{uCat=cat;buildUnitTabs();buildUnitSelects();};t.appendChild(b);});}
+function buildUnitSelects(){const cat=uCats[uCat];['unit-from','unit-to'].forEach((id,i)=>{const s=document.getElementById(id);s.innerHTML='';cat.units.forEach((u,j)=>{const o=document.createElement('option');o.value=j;o.textContent=u;s.appendChild(o);});s.value=i===1?1:0;});convertUnits();}
+function convertUnits(){const val=parseFloat(document.getElementById('unit-val').value);if(isNaN(val)){document.getElementById('unit-result').style.display='none';return;}const cat=uCats[uCat];const fi=parseInt(document.getElementById('unit-from').value);const ti=parseInt(document.getElementById('unit-to').value);let result;if(cat.special){let c;if(fi===0)c=val;else if(fi===1)c=(val-32)*5/9;else c=val-273.15;if(ti===0)result=c;else if(ti===1)result=c*9/5+32;else result=c+273.15;}else{result=(val*cat.toBase[fi])/cat.toBase[ti];}result=Math.round(result*1e8)/1e8;const res=document.getElementById('unit-result');res.style.display='block';res.innerHTML=`<strong style="color:var(--text)">${val} ${cat.units[fi]}</strong> &nbsp;=&nbsp; <strong style="color:var(--accent);font-size:1.1em">${result} ${cat.units[ti]}</strong>`;}
+buildUnitTabs();buildUnitSelects();
+
+// ═══════════════════════════════════════
+// TEXT TOOLS — ALL FIXED
+// ═══════════════════════════════════════
+function updateTextStats(){
+  const txt=document.getElementById('text-input').value;
+  document.getElementById('stat-chars').textContent=txt.length;
+  document.getElementById('stat-nospace').textContent=txt.replace(/\s/g,'').length;
+  document.getElementById('stat-words').textContent=txt.trim()?txt.trim().split(/\s+/).length:0;
+  document.getElementById('stat-lines').textContent=txt?txt.split('\n').length:0;
+  document.getElementById('stat-sentences').textContent=(txt.match(/[.!?]+/g)||[]).length;
+  document.getElementById('stat-read').textContent=Math.ceil((txt.trim().split(/\s+/).filter(Boolean).length)/200)||0;
+}
+function textOp(type){
+  const ta=document.getElementById('text-input');let t=ta.value;if(!t)return;
+  if(type==='upper')t=t.toUpperCase();
+  else if(type==='lower')t=t.toLowerCase();
+  else if(type==='title')t=t.replace(/\b\w/g,c=>c.toUpperCase());
+  else if(type==='sentence')t=t.charAt(0).toUpperCase()+t.slice(1).toLowerCase();
+  else if(type==='reverse')t=t.split('').reverse().join('');
+  else if(type==='sort')t=t.split('\n').sort((a,b)=>a.localeCompare(b)).join('\n');
+  else if(type==='sortd')t=t.split('\n').sort((a,b)=>b.localeCompare(a)).join('\n');
+  else if(type==='dedupe'){const seen=new Set();t=t.split('\n').filter(l=>{const k=l.trim();if(seen.has(k))return false;seen.add(k);return true;}).join('\n');}
+  else if(type==='trim')t=t.split('\n').map(l=>l.trim()).join('\n');
+  else if(type==='slug')t=t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  else if(type==='snake')t=t.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+  else if(type==='camel')t=t.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g,(_,c)=>c.toUpperCase());
+  ta.value=t;updateTextStats();
+}
+function copyTextFn(){
+  const text=document.getElementById('text-input').value;
+  const btn=document.getElementById('copy-text-btn');
+  // Try clipboard API first, fallback to execCommand
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>{btn.textContent='✅ Copied!';setTimeout(()=>btn.textContent='📋 Copy',1500);}).catch(()=>{fallbackCopy(text,btn);});
+  }else{fallbackCopy(text,btn);}
+}
+function fallbackCopy(text,btn){
+  const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');btn.textContent='✅ Copied!';}catch(e){btn.textContent='⚠ Failed';}
+  document.body.removeChild(ta);setTimeout(()=>btn.textContent='📋 Copy',1500);
+}
+function findReplace(){const ta=document.getElementById('text-input');const f=document.getElementById('find-input').value;const rep=document.getElementById('replace-input').value;if(!f)return;ta.value=ta.value.split(f).join(rep);updateTextStats();}
+function b64Encode(){const t=document.getElementById('text-input').value;const r=btoa(unescape(encodeURIComponent(t)));const o=document.getElementById('b64-output');o.style.display='block';o.textContent=r;}
+function b64Decode(){try{const t=document.getElementById('text-input').value;const r=decodeURIComponent(escape(atob(t.trim())));const o=document.getElementById('b64-output');o.style.display='block';o.textContent=r;}catch(e){const o=document.getElementById('b64-output');o.style.display='block';o.textContent='⚠ Invalid Base64 input';}}
+function urlEncode(){const o=document.getElementById('url-output');o.style.display='block';o.textContent=encodeURIComponent(document.getElementById('text-input').value);}
+function urlDecode(){try{const o=document.getElementById('url-output');o.style.display='block';o.textContent=decodeURIComponent(document.getElementById('text-input').value);}catch(e){const o=document.getElementById('url-output');o.style.display='block';o.textContent='⚠ Invalid URL encoding';}}
+
+// ═══════════════════════════════════════
+// COLOR TOOLS — REDESIGNED
+// ═══════════════════════════════════════
+function hexToRgb(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+function rgbToHsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h,s,l=(mx+mn)/2;if(mx===mn){h=s=0;}else{const d=mx-mn;s=l>0.5?d/(2-mx-mn):d/(mx+mn);switch(mx){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;default:h=(r-g)/d+4;}h/=6;}return[Math.round(h*360),Math.round(s*100),Math.round(l*100)];}
+function rgbToCmyk(r,g,b){r/=255;g/=255;b/=255;const k=1-Math.max(r,g,b);if(k===1)return[0,0,0,100];return[Math.round((1-r-k)/(1-k)*100),Math.round((1-g-k)/(1-k)*100),Math.round((1-b-k)/(1-k)*100),Math.round(k*100)];}
+function hslToHex(h,s,l){s/=100;l/=100;const a=s*Math.min(l,1-l);const f=n=>{const k=(n+h/30)%12;const c=l-a*Math.max(Math.min(k-3,9-k,1),-1);return Math.round(255*c).toString(16).padStart(2,'0');};return'#'+f(0)+f(8)+f(4);}
+function contrastColor(hex){const[r,g,b]=hexToRgb(hex);const lum=(0.299*r+0.587*g+0.114*b)/255;return lum>0.55?'rgba(0,0,0,0.55)':'rgba(255,255,255,0.7)';}
+
+let activePalType='shades';
+function updateColor(){
+  const hex=document.getElementById('main-color-input').value;
+  document.getElementById('main-color-preview').style.background=hex;
+  document.getElementById('col-hex-big').textContent=hex.toUpperCase();
+  document.getElementById('col-hex-big').style.color=contrastColor(hex);
+  const[r,g,b]=hexToRgb(hex);
+  const[h,s,l]=rgbToHsl(r,g,b);
+  const[c,m,y,k]=rgbToCmyk(r,g,b);
+  document.getElementById('col-hex-val').textContent=hex.toUpperCase();
+  document.getElementById('col-rgb-val').textContent=`${r}, ${g}, ${b}`;
+  document.getElementById('col-hsl-val').textContent=`${h}° ${s}% ${l}%`;
+  document.getElementById('col-cmyk-val').textContent=`${c}% ${m}% ${y}% ${k}%`;
+  document.getElementById('hex-manual').value=hex;
+  generatePalette(activePalType);
+}
+function hexManual(val){
+  const hex=val.startsWith('#')?val:'#'+val;
+  if(/^#[0-9a-fA-F]{6}$/.test(hex)){
+    document.getElementById('main-color-input').value=hex;updateColor();
+  }
+}
+function copyColVal(el){
+  const text=document.getElementById(el.dataset.val).textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const c=el.querySelector('.col-val-copy');const orig=c.textContent;c.textContent='✓ copied';c.style.color='var(--success)';
+    setTimeout(()=>{c.textContent=orig;c.style.color='';},1200);
+  });
+}
+function switchPal(type,btn){
+  activePalType=type;
+  document.querySelectorAll('.pal-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  generatePalette(type);
+}
+function generatePalette(type){
+  const hex=document.getElementById('main-color-input').value;
+  const[r,g,b]=hexToRgb(hex);const[h,s,l]=rgbToHsl(r,g,b);
+  let colors=[];
+  if(type==='shades') colors=[5,15,25,38,52,65,78,88].map(ll=>hslToHex(h,s,ll));
+  else if(type==='analogous') colors=[-60,-40,-20,0,20,40,60,80].map(dh=>hslToHex((h+dh+360)%360,s,l));
+  else if(type==='complement') colors=[0,20,40,180,200,220,340,360].map(dh=>hslToHex((h+dh+360)%360,s,l));
+  else if(type==='triadic') colors=[0,30,120,150,240,270,60,90].map(dh=>hslToHex((h+dh+360)%360,s,l));
+  const grid=document.getElementById('palette-grid');
+  const hexRow=document.getElementById('pal-hex-row');
+  grid.innerHTML=''; hexRow.innerHTML='';
+  // enforce 7 columns
+  grid.style.gridTemplateColumns=`repeat(${colors.length},1fr)`;
+  hexRow.style.gridTemplateColumns=`repeat(${colors.length},1fr)`;
+  colors.forEach(c=>{
+    const s2=document.createElement('div');s2.className='pal-swatch';s2.style.background=c;s2.title=c+'\nClick to select';
+    s2.onclick=()=>{document.getElementById('main-color-input').value=c;document.getElementById('hex-manual').value=c;updateColor();};
+    grid.appendChild(s2);
+    const h2=document.createElement('div');h2.className='pal-hex';h2.textContent=c.toUpperCase();
+    hexRow.appendChild(h2);
+  });
+}
+setTimeout(updateColor,100);
+
+// ═══════════════════════════════════════
+// HASH GENERATOR
+// ═══════════════════════════════════════
+async function generateHashes(){
+  const input=document.getElementById('hash-input').value;
+  if(!input){document.getElementById('hash-results').innerHTML='';return;}
+  const data=new TextEncoder().encode(input);
+  const algs=['SHA-1','SHA-256','SHA-384','SHA-512'];
+  const results=await Promise.all(algs.map(async alg=>{const h=await crypto.subtle.digest(alg,data);return{alg,hex:Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('')};}));
+  document.getElementById('hash-results').innerHTML=results.map(({alg,hex})=>`<div style="margin-bottom:1rem"><label class="lbl">${alg} <span style="color:var(--success);font-size:0.65rem">— click to copy</span></label><div class="hash-result" onclick="navigator.clipboard.writeText('${hex}').then(()=>{this.style.borderColor='var(--success)';setTimeout(()=>this.style.borderColor='',1000)})">${hex}</div></div>`).join('');
+}
+
+// ═══════════════════════════════════════
+// MARKDOWN
+// ═══════════════════════════════════════
+function renderMarkdown(){
+  const md=document.getElementById('md-input').value;
+  let h=md.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/^#{6}\s(.+)/gm,'<h6>$1</h6>').replace(/^#{5}\s(.+)/gm,'<h5>$1</h5>').replace(/^#{4}\s(.+)/gm,'<h4>$1</h4>')
+    .replace(/^#{3}\s(.+)/gm,'<h3>$1</h3>').replace(/^#{2}\s(.+)/gm,'<h2>$1</h2>').replace(/^#{1}\s(.+)/gm,'<h1>$1</h1>')
+    .replace(/\*\*\*(.+?)\*\*\*/g,'<strong><em>$1</em></strong>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/__(.+?)__/g,'<strong>$1</strong>').replace(/_(.+?)_/g,'<em>$1</em>').replace(/~~(.+?)~~/g,'<del>$1</del>')
+    .replace(/```([\s\S]*?)```/g,'<pre><code>$1</code></pre>').replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/^\&gt;\s(.+)/gm,'<blockquote>$1</blockquote>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank">$1</a>')
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img src="$2" alt="$1" style="max-width:100%;border-radius:6px">')
+    .replace(/^[-*]\s(.+)/gm,'<li>$1</li>').replace(/^---$/gm,'<hr>')
+    .replace(/\n\n/g,'</p><p>');
+  h='<p>'+h+'</p>';
+  h=h.replace(/<p><(h[1-6]|ul|blockquote|pre|hr|li)/g,'<$1').replace(/<\/(h[1-6]|blockquote|pre)><\/p>/g,'</$1>');
+  document.getElementById('md-preview').innerHTML=h;
+}
+function copyMdHtml(){navigator.clipboard.writeText(document.getElementById('md-preview').innerHTML);}
+function loadMdSample(){document.getElementById('md-input').value=`# Welcome to Markdown Preview\n\n## Features\n\nThis is **bold**, _italic_, and ~~strikethrough~~.\n\n- Bullet item one\n- Bullet item two\n- Item with \`inline code\`\n\n### Code Block\n\`\`\`\nfunction greet(name) {\n  return "Hello, " + name + "!";\n}\n\`\`\`\n\n> This is a blockquote.\n\n[Visit Example](https://example.com)\n\n---\n\nParagraph with **multiple** _formatted_ words and \`code\`.`;renderMarkdown();}
+loadMdSample();
+
+// ═══════════════════════════════════════
+// STOPWATCH & TIMER
+// ═══════════════════════════════════════
+let swInt=null,swOn=false,swMs=0,lapN=0;
+let ctInt=null,ctOn=false,ctRem=0;
+function switchMode(m){document.getElementById('sw-tab').classList.toggle('active',m==='sw');document.getElementById('ct-tab').classList.toggle('active',m==='ct');document.getElementById('sw-mode').style.display=m==='sw'?'block':'none';document.getElementById('ct-mode').style.display=m==='ct'?'block':'none';}
+function swToggle(){const btn=document.getElementById('sw-start');if(swOn){clearInterval(swInt);swOn=false;btn.textContent='▶ Resume';document.getElementById('sw-lap').disabled=true;}else{const s=Date.now()-swMs;swInt=setInterval(()=>{swMs=Date.now()-s;const t=swMs,h=Math.floor(t/3600000),m=Math.floor((t%3600000)/60000),s2=Math.floor((t%60000)/1000),d=Math.floor((t%1000)/100);document.getElementById('sw-display').textContent=`${pad(h)}:${pad(m)}:${pad(s2)}.${d}`;},100);swOn=true;btn.textContent='⏸ Pause';document.getElementById('sw-lap').disabled=false;}}
+function swLap(){lapN++;const t=swMs,h=Math.floor(t/3600000),m=Math.floor((t%3600000)/60000),s=Math.floor((t%60000)/1000),d=Math.floor((t%1000)/100);const list=document.getElementById('lap-list');list.style.display='block';list.innerHTML=`<div class="lap-item"><span>Lap ${lapN}</span><strong>${pad(h)}:${pad(m)}:${pad(s)}.${d}</strong></div>`+list.innerHTML;}
+function swReset(){clearInterval(swInt);swOn=false;swMs=0;lapN=0;document.getElementById('sw-display').textContent='00:00:00.0';document.getElementById('sw-start').textContent='▶ Start';document.getElementById('sw-lap').disabled=true;document.getElementById('lap-list').style.display='none';document.getElementById('lap-list').innerHTML='';}
+function ctToggle(){const btn=document.getElementById('ct-start');if(ctOn){clearInterval(ctInt);ctOn=false;btn.textContent='▶ Resume';}else{if(!ctRem){const h=parseInt(document.getElementById('ct-h').value)||0,m=parseInt(document.getElementById('ct-m').value)||0,s=parseInt(document.getElementById('ct-s').value)||0;ctRem=(h*3600+m*60+s)*1000;}if(!ctRem)return;document.getElementById('ct-done').style.display='none';const end=Date.now()+ctRem;ctInt=setInterval(()=>{ctRem=Math.max(0,end-Date.now());const t=ctRem,h=Math.floor(t/3600000),m=Math.floor((t%3600000)/60000),s=Math.floor((t%60000)/1000);document.getElementById('ct-display').textContent=`${h?pad(h)+':':''}${pad(m)}:${pad(s)}`;if(ctRem===0){clearInterval(ctInt);ctOn=false;btn.textContent='▶ Start';document.getElementById('ct-done').style.display='block';}},100);ctOn=true;btn.textContent='⏸ Pause';}}
+function ctReset(){clearInterval(ctInt);ctOn=false;ctRem=0;document.getElementById('ct-start').textContent='▶ Start';document.getElementById('ct-display').textContent='--:--';document.getElementById('ct-done').style.display='none';}
+function pad(n){return String(n).padStart(2,'0');}
+
+// ═══════════════════════════════════════
+// LOAN CALCULATOR
+// ═══════════════════════════════════════
+let amortOpen=false;
+function calcLoan(){
+  const P=parseFloat(document.getElementById('loan-amount').value)||0;
+  const r=(parseFloat(document.getElementById('loan-rate').value)||0)/100/12;
+  const n=(parseInt(document.getElementById('loan-term').value)||1)*12;
+  const monthly=r===0?P/n:P*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+  const total=monthly*n,interest=total-P;
+  document.getElementById('loan-results').innerHTML=`<div class="loan-box"><div class="loan-val">$${fmt(monthly)}</div><div class="loan-lbl">Monthly Payment</div></div><div class="loan-box"><div class="loan-val">$${fmt(total)}</div><div class="loan-lbl">Total Payment</div></div><div class="loan-box"><div class="loan-val">$${fmt(interest)}</div><div class="loan-lbl">Total Interest</div></div><div class="loan-box"><div class="loan-val">$${fmt(P)}</div><div class="loan-lbl">Principal</div></div>`;
+  const tbody=document.getElementById('amort-body');tbody.innerHTML='';let bal=P;
+  for(let i=1;i<=n;i++){const ip=bal*r,pp=monthly-ip;bal=Math.max(0,bal-pp);tbody.innerHTML+=`<tr><td>${i}</td><td>$${fmt(monthly)}</td><td>$${fmt(pp)}</td><td>$${fmt(ip)}</td><td>$${fmt(bal)}</td></tr>`;}
+}
+function fmt(n){return n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+function toggleAmort(){amortOpen=!amortOpen;document.getElementById('amort-wrap').style.display=amortOpen?'block':'none';}
+calcLoan();
+
+// ═══════════════════════════════════════
+// PASSWORD GENERATOR
+// ═══════════════════════════════════════
+const PCHARS={upper:'ABCDEFGHIJKLMNOPQRSTUVWXYZ',lower:'abcdefghijklmnopqrstuvwxyz',nums:'0123456789',syms:'!@#$%^&*()_+-=[]{}|;:,.<>?',ambig:'0Ol1I'};
+let lastPass='';
+function generatePassword(){
+  const len=parseInt(document.getElementById('pass-len').value)||16;
+  let cs='';
+  if(document.getElementById('pass-upper').checked)cs+=PCHARS.upper;
+  if(document.getElementById('pass-lower').checked)cs+=PCHARS.lower;
+  if(document.getElementById('pass-nums').checked)cs+=PCHARS.nums;
+  if(document.getElementById('pass-syms').checked)cs+=PCHARS.syms;
+  if(document.getElementById('pass-ambig').checked)cs=cs.split('').filter(c=>!PCHARS.ambig.includes(c)).join('');
+  if(!cs){document.getElementById('pass-output').textContent='Select at least one character type';return;}
+  const arr=new Uint32Array(len);crypto.getRandomValues(arr);
+  lastPass=Array.from(arr).map(n=>cs[n%cs.length]).join('');
+  document.getElementById('pass-output').textContent=lastPass;
+  showPwStrength(lastPass);
+}
+function showPwStrength(p){let score=0;if(p.length>=8)score++;if(p.length>=12)score++;if(p.length>=16)score++;if(/[A-Z]/.test(p))score++;if(/[a-z]/.test(p))score++;if(/[0-9]/.test(p))score++;if(/[^A-Za-z0-9]/.test(p))score++;const lv=score<=2?{c:'var(--danger)',l:'Weak'}:score<=4?{c:'var(--accent2)',l:'Fair'}:score<=5?{c:'var(--accent)',l:'Good'}:{c:'var(--success)',l:'Strong'};document.getElementById('pass-strength-bar').style.cssText=`height:6px;border-radius:3px;background:${lv.c};width:${Math.min(100,score/7*100)}%;transition:all 0.3s`;document.getElementById('pass-strength-label').textContent=lv.l;document.getElementById('pass-strength-label').style.color=lv.c;}
+function copyPass(){
+  if(!lastPass)return;
+  const btn=document.getElementById('pass-copy-btn');
+  if(navigator.clipboard){navigator.clipboard.writeText(lastPass).then(()=>{btn.textContent='✅ Copied!';setTimeout(()=>btn.textContent='📋 Copy',1500);});}
+  else{const ta=document.createElement('textarea');ta.value=lastPass;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);btn.textContent='✅ Copied!';setTimeout(()=>btn.textContent='📋 Copy',1500);}
+}
+function generateMulti(){
+  const count=Math.min(parseInt(document.getElementById('pass-count').value)||5,20);
+  const len=parseInt(document.getElementById('pass-len').value)||16;
+  let cs='';
+  if(document.getElementById('pass-upper').checked)cs+=PCHARS.upper;
+  if(document.getElementById('pass-lower').checked)cs+=PCHARS.lower;
+  if(document.getElementById('pass-nums').checked)cs+=PCHARS.nums;
+  if(document.getElementById('pass-syms').checked)cs+=PCHARS.syms;
+  if(document.getElementById('pass-ambig').checked)cs=cs.split('').filter(c=>!PCHARS.ambig.includes(c)).join('');
+  if(!cs)return;
+  const passes=[];for(let i=0;i<count;i++){const arr=new Uint32Array(len);crypto.getRandomValues(arr);passes.push(Array.from(arr).map(n=>cs[n%cs.length]).join(''));}
+  document.getElementById('pass-multi').innerHTML='<label class="lbl" style="margin-bottom:8px">'+count+' Generated Passwords (click any to copy)</label>'+passes.map(p=>`<div class="hash-result" style="margin-bottom:6px;font-size:0.82rem" onclick="navigator.clipboard.writeText('${p}');this.style.borderColor='var(--success)';setTimeout(()=>this.style.borderColor='',1000)">${p}</div>`).join('');
+}
+generatePassword();
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+setTimeout(()=>openTool('converter'),100);
+</script>
+</body>
+</html>
